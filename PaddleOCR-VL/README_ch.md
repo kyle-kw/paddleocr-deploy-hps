@@ -92,9 +92,72 @@ export HPS_MAX_CONCURRENT_INFERENCE_REQUESTS=8
 
 ## API 使用
 
-### 文档解析
+### 版面解析
 
-请参考 [PaddleOCR-VL 使用教程](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/pipeline_usage/PaddleOCR-VL.md) 中的客户端调用相关章节。
+**接口：** `POST /layout-parsing`
+
+**请求参数：**
+
+| 参数 | 类型 | 是否必填 | 默认值 | 说明 |
+|------|------|----------|--------|------|
+| `file` | string | 是 | - | Base64 编码的文件内容或可访问的 URL |
+| `fileType` | integer | 否 | 自动检测 | 0 表示 PDF，1 表示图片 |
+| `useDocOrientationClassify` | boolean | 否 | false | 自动校正 0/90/180/270 度旋转 |
+| `useDocUnwarping` | boolean | 否 | false | 校正扭曲/倾斜的图片 |
+| `useLayoutDetection` | boolean | 否 | true | 启用版面区域检测和排序 |
+| `useChartRecognition` | boolean | 否 | false | 启用图表转表格 |
+| `layoutThreshold` | number | 否 | 0.5 | 版面模型置信度阈值（0-1） |
+| `layoutNms` | boolean | 否 | false | 对检测框进行 NMS 后处理以去除重叠 |
+| `layoutUnclipRatio` | number | 否 | 1.0 | 检测框扩展系数 |
+| `promptLabel` | string | 否 | null | VL 模型提示类型："ocr"、"formula"、"table" 或 "chart" |
+| `visualize` | boolean | 否 | null | 是否返回可视化图片和中间结果 |
+| `prettifyMarkdown` | boolean | 否 | false | 输出格式化的 Markdown |
+| `mergeTables` | boolean | 否 | true | 合并跨页表格 |
+| `relevelTitles` | boolean | 否 | true | 识别标题层级 |
+| `maxPixels` | number | 否 | null | 最大图片尺寸（显存不足时可降低） |
+
+**示例：**
+
+```bash
+curl -X POST http://localhost:8080/layout-parsing \
+  -H "Content-Type: application/json" \
+  -d '{
+    "file": "<base64_encoded_image>",
+    "fileType": 1
+  }'
+```
+
+**响应：**
+
+```json
+{
+  "logId": "xxx",
+  "errorCode": 0,
+  "errorMsg": "Success",
+  "result": {
+    "layoutParsingResults": [
+      {
+        "prunedResult": {},
+        "markdown": {
+          "text": "...",
+          "images": {}
+        },
+        "outputImages": {},
+        "inputImage": "<base64>"
+      }
+    ],
+    "dataInfo": {}
+  }
+}
+```
+
+### 多页重组
+
+**接口：** `POST /restructure-pages`
+
+该接口用于对多页解析结果进行重组，包括跨页表格合并和标题层级重分配。
+
+完整接口规范请参考 [官方接口文档](https://ai.baidu.com/ai-doc/AISTUDIO/Cmkz2m0ma)。
 
 ### 健康检查
 
@@ -105,10 +168,6 @@ curl http://localhost:8080/health
 # 就绪检查（验证 Triton 和 VLM 服务是否已准备好处理请求）
 curl http://localhost:8080/health/ready
 ```
-
-### 接口文档
-
-完整接口规范请参考 [官方接口文档](https://ai.baidu.com/ai-doc/AISTUDIO/Cmkz2m0ma) 。
 
 ## 性能调优
 

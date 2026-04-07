@@ -92,9 +92,72 @@ To adjust pipeline configurations (such as model path, batch size, deployment de
 
 ## API Usage
 
-### Document Parsing
+### Layout Parsing
 
-Please refer to the Client-Side Invocation section in the [PaddleOCR-VL Usage Tutorial](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/pipeline_usage/PaddleOCR-VL.en.md).
+**Endpoint:** `POST /layout-parsing`
+
+**Request Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `file` | string | Yes | - | Base64-encoded file content or accessible URL |
+| `fileType` | integer | No | Auto-detect | 0 for PDF, 1 for image |
+| `useDocOrientationClassify` | boolean | No | false | Auto-correct 0/90/180/270 degree rotations |
+| `useDocUnwarping` | boolean | No | false | Correct distorted/skewed images |
+| `useLayoutDetection` | boolean | No | true | Enable layout region detection and ordering |
+| `useChartRecognition` | boolean | No | false | Enable chart-to-table conversion |
+| `layoutThreshold` | number | No | 0.5 | Layout model confidence threshold (0-1) |
+| `layoutNms` | boolean | No | false | Apply NMS post-processing to remove overlapping boxes |
+| `layoutUnclipRatio` | number | No | 1.0 | Detection box expansion coefficient |
+| `promptLabel` | string | No | null | VL model prompt type: "ocr", "formula", "table", or "chart" |
+| `visualize` | boolean | No | null | Return visualization images and intermediate results |
+| `prettifyMarkdown` | boolean | No | false | Output formatted Markdown |
+| `mergeTables` | boolean | No | true | Merge cross-page tables |
+| `relevelTitles` | boolean | No | true | Recognize title hierarchy levels |
+| `maxPixels` | number | No | null | Maximum image size (reduce for memory constraints) |
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8080/layout-parsing \
+  -H "Content-Type: application/json" \
+  -d '{
+    "file": "<base64_encoded_image>",
+    "fileType": 1
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "logId": "xxx",
+  "errorCode": 0,
+  "errorMsg": "Success",
+  "result": {
+    "layoutParsingResults": [
+      {
+        "prunedResult": {},
+        "markdown": {
+          "text": "...",
+          "images": {}
+        },
+        "outputImages": {},
+        "inputImage": "<base64>"
+      }
+    ],
+    "dataInfo": {}
+  }
+}
+```
+
+### Multi-Page Restructuring
+
+**Endpoint:** `POST /restructure-pages`
+
+This endpoint restructures multi-page parsing results, including cross-page table merging and title level reassignment.
+
+For the full API specification, please refer to the [Official API Documentation](https://ai.baidu.com/ai-doc/AISTUDIO/Cmkz2m0ma).
 
 ### Health Checks
 
@@ -105,10 +168,6 @@ curl http://localhost:8080/health
 # Readiness check (verifies Triton and VLM services are ready to process requests)
 curl http://localhost:8080/health/ready
 ```
-
-### API Documentation
-
-For the full API specification, please refer to the [Official API Documentation](https://ai.baidu.com/ai-doc/AISTUDIO/Cmkz2m0ma).
 
 ## Performance Tuning
 
