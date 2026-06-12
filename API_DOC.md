@@ -8,7 +8,7 @@
 
 - [PaddleOCR Deploy HPS API 接口文档](#paddleocr-deploy-hps-api-接口文档)
   - [目录](#目录)
-  - [1. PP-OCRv5 - OCR 识别接口](#1-pp-ocrv5---ocr-识别接口)
+  - [1. PP-OCRv6 - OCR 识别接口](#1-pp-ocrv6---ocr-识别接口)
     - [基本信息](#基本信息)
     - [请求参数](#请求参数)
     - [请求示例](#请求示例)
@@ -37,7 +37,7 @@
 
 ---
 
-## 1. PP-OCRv5 - OCR 识别接口
+## 1. PP-OCRv6 - OCR 识别接口
 
 高精度 OCR 识别，支持简体/繁体中文、英文、日文、拼音、手写体、竖排文本和生僻字。
 
@@ -498,8 +498,8 @@ GET /health/ready
 
 | 产线 | 默认端口 |
 |------|----------|
-| PP-OCRv5 | 8080 |
+| PP-OCRv6 | 8080 |
 | PP-StructureV3 | 8081 |
 | PaddleOCR-VL | 8080 |
 
-> **注意：** PP-OCRv5 和 PaddleOCR-VL 默认端口相同（8080），请勿同时在同一主机上使用默认配置启动两个服务。可通过环境变量 `GATEWAY_PORT` 修改端口。
+> **注意：** PP-OCRv6 和 PaddleOCR-VL 默认端口相同（8080），请勿同时在同一主机上使用默认配置启动两个服务。可通过环境变量 `GATEWAY_PORT` 修改端口。
